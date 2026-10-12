@@ -1,22 +1,41 @@
-# GameSQL — Mistério no Zoológico 🐯
-Jogo educativo em português criado a partir da ideia de Tes: 100 animais, 10 espécies e três refeições por dia. Uma falha no sistema deixou um animal sem alimentação. O jogador investiga com SQL real e ajuda o tratador.
+# GameSQL — Zoológico Aurora 🐾
+Jogo educativo em português criado com Tes: 100 animais, 10 espécies e cinco níveis de consultas SQL reais.
 
 ## Jogar
-Sirva a pasta `dist` com um servidor estático. Por exemplo, na raiz do projeto:
+Na raiz do projeto:
 
 ```sh
 python -m http.server 8000 --directory dist
 ```
-Abra http://localhost:8000. As dependências SQLite estão incluídas em `dist/vendor`; fontes externas são opcionais e têm fallback local.
+Abra http://localhost:8000. SQLite/sql.js 1.13.0 está incluído; as fontes externas são opcionais, com fallback local.
 
-## Experiência
-Investigação livre com roteiro reduzido e duas pistas narrativas opcionais, sem consultas prontas. O jogador decide como usar `SELECT`, `FROM` e `WHERE`. Uma consulta que identifica somente o animal correto (pelo id ou nome, sem alias nessas colunas) dispara os parabéns imediatamente, com contagem de consultas e pistas. O animal sem refeições é sorteado a cada reinício, sempre com exatamente um contador zero. A introdução apresenta a tabela e suas quatro colunas. Consultas de escrita são bloqueadas no editor; o botão de alimentação atualiza o contador em uma unidade até três. Recomeçar restaura o cenário. O progresso dura enquanto a página permanecer aberta; recarregar reinicia o teste.
+## Níveis
+1. Encontrar o único animal alimentado zero vezes.
+2. Identificar o animal mais velho.
+3. Identificar os três mais novos, em ordem crescente de idade.
+4. Selecionar os três mais velhos e apresentar esse grupo em ordem crescente de idade.
+5. Identificar os dois animais mais pesados (ordem livre).
+
+Cada nível tem duas pistas opcionais. O acerto depende do resultado, incluindo quantidade de animais e ordem quando exigida. O jogador deve incluir nome ou id para identificar os animais. Colunas extras são permitidas; nomes podem ter aliases. `id` aceita alias explícito com `AS`. São aceitas consultas com `SELECT`, subconsultas e `WITH`, sem exigir sintaxe idêntica à sugestão. Ao acertar, aparecem parabéns, uma consulta sugerida com explicação e o botão do próximo nível. A sugestão é uma forma clara de resolver, sem afirmar que existe uma única consulta ótima.
+
+Os dados são preservados ao avançar. O registro de alimentação é opcional após vencer o nível 1. Recomeçar sorteia outro animal sem refeições, sempre mantendo exatamente um contador zero. Recarregar a página reinicia a partida; não há persistência do progresso.
 
 ## Dados
-Tabela `animais`: `id`, `animal`, `especie`, `vezes_alimentado`. Exatamente 100 registros fictícios; contador diário entre 0 e 3. Viveiros fazem parte do cenário narrativo e não adicionam colunas à tabela definida por Tes. `zoologico.sql` permite reproduzir a base em SQLite.
+Tabela `animais`: `id`, `animal`, `especie`, `vezes_alimentado`, `idade` (anos), `kg` (quilogramas).
 
-## Tecnologia e licença de terceiros
-HTML, CSS, JavaScript e SQLite via sql.js 1.13.0. Dependências distribuídas sob licença MIT (ver `dist/vendor/LICENSE-sql.js`).
+São 100 nomes exclusivos e 100 pesos individuais distintos. Os limites de idade dos desafios não têm empates: isso permite validar a resposta sem critérios de desempate extras. Idades e pesos são fictícios e plausíveis; as referências e os grupos usados estão em `dados-referencias.md`. Rótulos como Macaco e Tartaruga são simplificações didáticas, não nomes de espécies científicas. A rotina de três refeições pertence ao cenário do jogo.
+
+`zoologico.sql` reproduz a base fixa em SQLite. No navegador, somente a identidade do animal com zero refeições é sorteada por partida. `build.py` regenera o SQL e os dados, preservando os nomes.
+
+## Validação
+
+```sh
+node tests/niveis.cjs
+```
+Os testes exercitam todos os níveis, soluções alternativas, ordenações incorretas, contagem de animais, nomes/pesos únicos, sorteio, pistas, avanço e limite de refeições.
+
+## Tecnologia
+HTML, CSS, JavaScript e SQLite via sql.js 1.13.0, licença MIT (ver `dist/vendor/LICENSE-sql.js`). As consultas rodam em uma cópia da base. O editor aceita somente leitura; o registro de alimentação usa uma atualização controlada.
 
 ## Situação
-Versão inicial para análise e teste privado. Sem publicação pública do site e sem GitHub Pages.
+Versão para análise e teste privado. Sem publicação pública do site e sem GitHub Pages.
