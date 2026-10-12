@@ -10,7 +10,7 @@ python -m http.server 8000 --directory dist
 Abra http://localhost:8000. As dependências SQLite estão incluídas em `dist/vendor`; fontes externas são opcionais e têm fallback local.
 
 ## Experiência
-Cinco missões ensinam `SELECT`, `FROM`, `WHERE`, comparação numérica e verificação de registros. Pistas aparecem sob demanda, da explicação até a consulta. As missões validam os resultados, aceitando consultas equivalentes. Consultas de escrita são bloqueadas no editor; o botão de alimentação atualiza o contador em uma unidade até três. Recomeçar restaura o cenário. O progresso dura enquanto a página permanecer aberta; recarregar reinicia o teste.
+Investigação livre com roteiro reduzido e duas pistas narrativas opcionais, sem consultas prontas. O jogador decide como usar `SELECT`, `FROM` e `WHERE`. Uma consulta que identifica somente o animal correto (pelo id ou nome, sem alias nessas colunas) dispara os parabéns imediatamente, com contagem de consultas e pistas. O animal sem refeições é sorteado a cada reinício, sempre com exatamente um contador zero. A introdução apresenta a tabela e suas quatro colunas. Consultas de escrita são bloqueadas no editor; o botão de alimentação atualiza o contador em uma unidade até três. Recomeçar restaura o cenário. O progresso dura enquanto a página permanecer aberta; recarregar reinicia o teste.
 
 ## Dados
 Tabela `animais`: `id`, `animal`, `especie`, `vezes_alimentado`. Exatamente 100 registros fictícios; contador diário entre 0 e 3. Viveiros fazem parte do cenário narrativo e não adicionam colunas à tabela definida por Tes. `zoologico.sql` permite reproduzir a base em SQLite.
