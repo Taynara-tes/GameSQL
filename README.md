@@ -1,7 +1,15 @@
 # GameSQL — Zoológico Aurora 🐾
 Jogo educativo em português criado com Tes: 100 animais, 10 espécies e sete níveis de consultas SQL reais.
 
-## Jogar
+## Jogar online
+
+**[Abrir o GameSQL no navegador](https://gamesql-zoologico-tes.taynara-e-sousa.chatgpt.site)**
+
+O acesso é público, no celular ou computador, sem instalação. A versão online tem dez níveis pontuados e prática ilimitada.
+
+## Executar localmente (desenvolvimento)
+
+As instruções abaixo servem para quem baixou o código e quer iniciar um servidor no próprio computador. O endereço localhost não é o link público do jogo.
 Na raiz do projeto:
 
 ```sh
@@ -40,4 +48,4 @@ Os testes exercitam todos os níveis, soluções alternativas, ordenações inco
 HTML, CSS, JavaScript e SQLite via sql.js 1.13.0, licença MIT (ver `dist/vendor/LICENSE-sql.js`). As consultas rodam em uma cópia da base. O editor aceita somente leitura; o registro de alimentação usa uma atualização controlada.
 
 ## Situação
-Versão para análise e teste privado. Sem publicação pública do site e sem GitHub Pages.
+O jogo online está publicado e acessível ao público pelo link acima. O código disponível neste repositório ainda corresponde à versão anterior, com sete níveis.
