@@ -7,11 +7,18 @@ const LEVELS=[
  {title:'Os dois gigantes',description:'Encontre os dois animais mais pesados de todo o zoológico. A coluna kg guarda o peso em quilogramas. Inclua nome ou id; a ordem entre os dois é livre.',hints:['O nome da espécie é uma pista, mas são os pesos individuais que confirmam os dois gigantes.','Compare os pesos de todos os animais e mantenha somente os dois maiores.'],sql:'SELECT id, animal, kg\nFROM animais\nORDER BY kg DESC\nLIMIT 2;',explanation:'DESC coloca os maiores pesos primeiro. LIMIT 2 retorna somente os dois animais mais pesados.'}
 ];
 const ANSWER_GUIDES=[
- ['Comece com SELECT e inclua animal ou id para identificar o resultado. Você também pode mostrar vezes_alimentado para conferir.', 'Use FROM animais para escolher a tabela correta.', 'Com WHERE, mantenha somente os registros cujo contador de alimentação é igual a zero. Use = para comparar números; não coloque o nome da coluna entre aspas simples.'],
- ['Escolha animal e idade com SELECT e consulte a tabela animais.', 'Organize pela coluna idade, do maior número para o menor. ORDER BY idade DESC faz essa organização.', 'Use LIMIT 1 para manter só o primeiro registro. Consultar apenas MAX(idade) retorna a idade, mas não identifica o animal.'],
- ['Selecione animal e idade da tabela animais.', 'Para encontrar os mais novos, organize as idades da menor para a maior com ORDER BY idade ASC.', 'Depois da ordenação, LIMIT 3 mantém os três mais novos. Aplicar o limite antes de escolher os menores pode pegar animais diferentes.'],
- ['Resolva primeiro a seleção do grupo: organize as idades da maior para a menor e mantenha três registros.', 'Coloque essa seleção dentro de uma subconsulta no FROM, dando ao grupo o nome veteranos.', 'Na consulta externa, selecione o grupo e organize idade ASC. Assim você mostra os três mais velhos do menos velho para o mais velho. Uma CTE com WITH também pode organizar essas duas tarefas.'],
- ['Escolha animal e kg para identificar os animais e conferir seus pesos na tabela animais.', 'Ordene pela coluna kg, da maior para a menor, usando ORDER BY kg DESC.', 'Use LIMIT 2 para manter os dois maiores pesos. Filtrar só pela espécie não garante que você encontrou os dois indivíduos mais pesados.']
+ ['SELECT animal, vezes_alimentado — selecionar o nome e as refeições.', 'FROM animais — buscar na tabela animais.', 'WHERE vezes_alimentado = 0 — mostrar apenas quem recebeu zero refeições.'],
+ ['SELECT animal, idade — selecionar o nome e a idade.', 'FROM animais — buscar na tabela animais.', 'ORDER BY idade DESC — ordenar do mais velho ao mais novo.', 'LIMIT 1 — mostrar somente o primeiro.'],
+ ['SELECT animal, idade — selecionar o nome e a idade.', 'FROM animais — buscar na tabela animais.', 'ORDER BY idade ASC — ordenar do mais novo ao mais velho.', 'LIMIT 3 — mostrar somente os três primeiros.'],
+ ['Dentro dos parênteses: SELECT animal, idade FROM animais — buscar nomes e idades.', 'Ainda dentro: ORDER BY idade DESC LIMIT 3 — escolher os três mais velhos.', 'Fora: SELECT animal, idade FROM (...) AS veteranos — consultar o grupo; AS dá um nome a ele.', 'No final: ORDER BY idade ASC — ordenar esse grupo do menos velho ao mais velho.'],
+ ['SELECT animal, kg — selecionar o nome e o peso.', 'FROM animais — buscar na tabela animais.', 'ORDER BY kg DESC — ordenar do mais pesado ao mais leve.', 'LIMIT 2 — mostrar somente os dois primeiros.']
+];
+const ANSWER_NOTES=[
+ 'WHERE = onde / condição. O sinal = significa igual a.',
+ 'ORDER BY = ordenar por. DESC = decrescente. LIMIT = limitar.',
+ 'ORDER BY = ordenar por. ASC = crescente. LIMIT = limitar.',
+ 'Faça primeiro a consulta interna. Depois ordene o grupo na consulta externa. DESC = decrescente; ASC = crescente.',
+ 'ORDER BY = ordenar por. DESC = decrescente. LIMIT = limitar.'
 ];
 let SQL,db,target,level=0,won=false,consultas=0,pistas=0,history=[];
 function message(text,type=''){$('feedback').textContent=text;$('feedback').className=type;}
@@ -39,7 +46,7 @@ function counter(){return db.exec(`SELECT vezes_alimentado FROM animais WHERE id
 function care(){const n=counter();$('rescue-text').textContent=`${target.animal} · ${target.especie} · ${n} de 3 refeições registradas hoje.`;$('feed').disabled=n>=3;$('feed').textContent=n>=3?'Três refeições registradas ✓':'Registrar uma alimentação (+1)';}
 $('run').onclick=execute;$('hint').onclick=()=>{if(won||pistas>=2)return;$('hint-text').hidden=false;$('hint-text').textContent=LEVELS[level].hints[pistas++];drawLevel();};
 $('example').onclick=()=>{$('hint-text').hidden=false;$('hint-text').textContent='SELECT escolhe as colunas, FROM informa a tabela e WHERE aplica uma condição. ORDER BY organiza os registros e LIMIT restringe a quantidade. Você decide como combinar esses comandos.';};
-$('answer').onclick=()=>{const panel=$('answer-panel');panel.hidden=!panel.hidden;$('answer').setAttribute('aria-expanded',String(!panel.hidden));if(panel.hidden)return;$('answer-steps').replaceChildren();for(const text of ANSWER_GUIDES[level]){const li=document.createElement('li');li.textContent=text;$('answer-steps').append(li);}$('answer-query').textContent=LEVELS[level].sql;$('answer-explanation').textContent=LEVELS[level].explanation;};
+$('answer').onclick=()=>{const panel=$('answer-panel');panel.hidden=!panel.hidden;$('answer').setAttribute('aria-expanded',String(!panel.hidden));if(panel.hidden)return;$('answer-steps').replaceChildren();for(const text of ANSWER_GUIDES[level]){const li=document.createElement('li');li.textContent=text;$('answer-steps').append(li);}$('answer-query').textContent=LEVELS[level].sql;$('answer-explanation').textContent=ANSWER_NOTES[level];};
 $('query').addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key==='Enter'){e.preventDefault();if(db)execute();}});
 $('feed').onclick=()=>{if(level!==0||!won)return;db.run(`UPDATE animais SET vezes_alimentado=vezes_alimentado+1 WHERE id=${target.id} AND vezes_alimentado<3`);care();message('Alimentação registrada. Você já pode avançar para o próximo nível.','success');};
 function clearLevel(){$('answer-panel').hidden=true;$('answer-solution').open=false;$('answer').setAttribute('aria-expanded','false');won=false;consultas=0;pistas=0;$('query').value='';$('hint-text').hidden=true;$('celebration').hidden=true;$('rescue').hidden=true;$('finish').hidden=true;$('results').innerHTML='<div class="empty">🔎<p>Escolha sua consulta e descubra o resultado.</p></div>';$('row-count').textContent='Nenhuma consulta ainda';drawLevel();}
