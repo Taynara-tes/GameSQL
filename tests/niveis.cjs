@@ -2,17 +2,19 @@ const fs=require('fs'),path=require('path'),vm=require('vm'),assert=require('ass
 const root=path.resolve(__dirname,'..');const init=require(path.join(root,'dist/vendor/sql-wasm.js'));
 (async()=>{
  const engine=await init({locateFile:()=>path.join(root,'dist/vendor/sql-wasm.wasm')});
- const nodes=new Map();function element(){return {textContent:'',className:'',hidden:false,value:'',disabled:false,children:[],append(...x){this.children.push(...x)},replaceChildren(){this.children=[]},addEventListener(){},innerHTML:''};}
+ const nodes=new Map();function element(){return {textContent:'',className:'',hidden:false,value:'',disabled:false,children:[],append(...x){this.children.push(...x)},replaceChildren(){this.children=[]},addEventListener(){},setAttribute(k,v){this[k]=v},innerHTML:''};}
  const document={getElementById(id){if(!nodes.has(id))nodes.set(id,element());return nodes.get(id)},createElement:element};
  const ctx=vm.createContext({document,confirm:()=>true,initSqlJs:()=>Promise.resolve(engine)});const run=s=>vm.runInContext(s,ctx);
  run(fs.readFileSync(path.join(root,'dist/dados.js'),'utf8'));run(fs.readFileSync(path.join(root,'dist/game.js'),'utf8'));await new Promise(r=>setImmediate(r));
  function query(q){nodes.get('query').value=q;run('execute()');}
  const allNames=new Set();for(let i=0;i<20;i++){run('reset()');allNames.add(run('target.animal'));assert.equal(run("db.exec('SELECT COUNT(*) FROM animais WHERE vezes_alimentado=0')[0].values[0][0]"),1);assert.equal(run("db.exec('SELECT COUNT(DISTINCT animal) FROM animais')[0].values[0][0]"),100);assert.equal(run("db.exec('SELECT COUNT(DISTINCT kg) FROM animais')[0].values[0][0]"),100);}
  nodes.get('next').onclick();assert.equal(run('level'),0,'não avançar sem acerto');
+ for(let i=0;i<5;i++){run(`level=${i};clearLevel()`);nodes.get('answer').onclick();assert.equal(nodes.get('answer-panel').hidden,false);assert.equal(nodes.get('answer-steps').children.length,3);assert.equal(nodes.get('answer-query').textContent,run('LEVELS[level].sql'));assert.equal(run('won'),false);assert.equal(run('consultas'),0);nodes.get('answer').onclick();assert.equal(nodes.get('answer-panel').hidden,true);}run('reset()');assert.equal(nodes.get('answer-panel').hidden,true);
+
  query('SELECT * FROM animais');assert.equal(run('won'),false);query('SELECT * FROM animais WHERE vezes_alimentado<3');assert.equal(run('won'),false);
  query('SELECT animal AS nome FROM animais WHERE vezes_alimentado=(SELECT MIN(vezes_alimentado) FROM animais)');assert.equal(run('won'),true);assert.equal(nodes.get('celebration').hidden,false);assert.equal(nodes.get('next').hidden,false);assert(nodes.get('suggested-query').textContent.includes('WHERE'));
  const snapshot=run("JSON.stringify(db.exec('SELECT id, idade, kg FROM animais'))");for(let i=0;i<5;i++)nodes.get('feed').onclick();assert.equal(run('counter()'),3);
- nodes.get('next').onclick();assert.equal(run('level'),1);assert.equal(run("JSON.stringify(db.exec('SELECT id, idade, kg FROM animais'))"),snapshot);assert.equal(nodes.get('celebration').hidden,true);
+ nodes.get('next').onclick();assert.equal(run('level'),1);assert.equal(nodes.get('answer-panel').hidden,true);assert.equal(run("JSON.stringify(db.exec('SELECT id, idade, kg FROM animais'))"),snapshot);assert.equal(nodes.get('celebration').hidden,true);
  query('SELECT MAX(idade) FROM animais');assert.equal(run('won'),false,'precisa identificar animal');query('SELECT animal AS nome, idade AS anos FROM animais WHERE idade=(SELECT MAX(idade) FROM animais)');assert.equal(run('won'),true);
  nodes.get('next').onclick();query('SELECT animal FROM animais ORDER BY idade DESC LIMIT 3');assert.equal(run('won'),false);query('WITH jovens AS (SELECT * FROM animais ORDER BY idade LIMIT 3) SELECT animal AS nome, idade AS anos FROM jovens ORDER BY anos');assert.equal(run('won'),true);
  nodes.get('next').onclick();query('SELECT animal FROM animais ORDER BY idade DESC LIMIT 3');assert.equal(run('won'),false,'mais velhos precisa ordem crescente');query('SELECT animal FROM animais ORDER BY idade ASC LIMIT 3');assert.equal(run('won'),false,'novos não são veteranos');query('WITH grupo AS (SELECT * FROM animais ORDER BY idade DESC LIMIT 3) SELECT animal AS nome, idade FROM grupo ORDER BY idade ASC');assert.equal(run('won'),true);
