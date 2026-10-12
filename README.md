@@ -1,5 +1,5 @@
 # GameSQL — Zoológico Aurora 🐾
-Jogo educativo em português criado com Tes: 100 animais, 10 espécies e cinco níveis de consultas SQL reais.
+Jogo educativo em português criado com Tes: 100 animais, 10 espécies e sete níveis de consultas SQL reais.
 
 ## Jogar
 Na raiz do projeto:
@@ -15,8 +15,10 @@ Abra http://localhost:8000. SQLite/sql.js 1.13.0 está incluído; as fontes exte
 3. Identificar os três mais novos, em ordem crescente de idade.
 4. Selecionar os três mais velhos e apresentar esse grupo em ordem crescente de idade.
 5. Identificar os dois animais mais pesados (ordem livre).
+6. Identificar espécies com idade média acima de 20 anos, mostrando espécie e média em ordem decrescente.
+7. Identificar o animal mais pesado de cada espécie, ordenando os dez por peso decrescente.
 
-Cada nível tem duas pistas opcionais e um botão vermelho **Resposta**, com a ordem de escrita dos comandos, traduções curtas em português e a consulta sugerida em uma seção expansível. Abrir a resposta não executa SQL nem conclui o nível; o painel é reiniciado ao avançar. O acerto depende do resultado, incluindo quantidade de animais e ordem quando exigida. O jogador deve incluir nome ou id para identificar os animais. Colunas extras são permitidas; nomes podem ter aliases. `id` aceita alias explícito com `AS`. São aceitas consultas com `SELECT`, subconsultas e `WITH`, sem exigir sintaxe idêntica à sugestão. Ao acertar, aparecem parabéns, uma consulta sugerida com explicação e o botão do próximo nível. A sugestão é uma forma clara de resolver, sem afirmar que existe uma única consulta ótima.
+Cada nível tem duas pistas opcionais e um botão vermelho **Resposta**, com a ordem de escrita dos comandos, traduções curtas em português e a consulta sugerida em uma seção expansível. Abrir a resposta não executa SQL nem conclui o nível; o painel é reiniciado ao avançar. O acerto depende do resultado, incluindo quantidade de animais e ordem quando exigida. O jogador deve incluir nome ou id para identificar os animais. O nível 6 pede espécie e média; admite arredondamento a duas casas decimais e aliases livres para essas colunas. Colunas extras são permitidas; nomes podem ter aliases. `id` aceita alias explícito com `AS`. São aceitas consultas com `SELECT`, subconsultas e `WITH`, sem exigir sintaxe idêntica à sugestão. Ao acertar, aparecem parabéns, uma consulta sugerida com explicação, tradução de cada comando no rodapé e o botão do próximo nível. A sugestão é uma forma clara de resolver, sem afirmar que existe uma única consulta ótima.
 
 Os dados são preservados ao avançar. O registro de alimentação é opcional após vencer o nível 1. Recomeçar sorteia outro animal sem refeições, sempre mantendo exatamente um contador zero. Recarregar a página reinicia a partida; não há persistência do progresso.
 
