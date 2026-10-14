@@ -7,16 +7,6 @@ Jogo educativo em português criado com Tes: 100 animais, 10 espécies e sete n�
 
 O acesso é público, no celular ou computador, sem instalação. A versão online tem dez níveis pontuados e prática ilimitada.
 
-## Executar localmente (desenvolvimento)
-
-As instruções abaixo servem para quem baixou o código e quer iniciar um servidor no próprio computador. O endereço localhost não é o link público do jogo.
-Na raiz do projeto:
-
-```sh
-python -m http.server 8000 --directory dist
-```
-Abra http://localhost:8000. SQLite/sql.js 1.13.0 está incluído; as fontes externas são opcionais, com fallback local.
-
 ## Níveis
 1. Encontrar o único animal alimentado zero vezes.
 2. Identificar o animal mais velho.
